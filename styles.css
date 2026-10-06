@@ -179,3 +179,9 @@ ul.areas li { border-bottom: 1px solid var(--line); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .check { color: #b00020; font-weight: 700; font-size: 0.85rem; }
 .unfinished summary { min-height: 32px; font-weight: 700; cursor: pointer; }
+
+/* ---- Export (step 7) ---- */
+.ok-box { background: #e9f6ec; border: 2px solid #1b6e2d; border-radius: 12px; padding: 4px 14px; margin: 14px 0; word-break: break-word; }
+.steps { padding-left: 22px; }
+.steps li { margin: 8px 0; }
+.export-due { color: #b00020; font-weight: 700; font-size: 0.85rem; }

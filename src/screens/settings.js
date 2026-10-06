@@ -1,7 +1,7 @@
 // Settings screen: staff list, risk ref numbering and review interval.
 // Every change is saved straight away.
 import { h } from "../ui.js";
-import { getSettings, saveSettings } from "../db.js";
+import { getSettings, saveSettings, listAssessments, deleteAssessment } from "../db.js";
 import {
   formatRiskRef, cleanPrefix, parseRefNumber, parseReviewMonths,
   addStaffName, removeStaffName,
@@ -110,6 +110,21 @@ export async function renderSettings(root) {
     },
   });
 
+  // ---- Delete exported assessments ----
+  const exported = (await listAssessments()).filter((a) => a.exportedAt);
+  const clearMsg = h("p", { class: "hint", role: "status" });
+  const clearButton = h("button", {
+    class: "btn btn-danger", type: "button", disabled: exported.length === 0,
+    onclick: async () => {
+      if (!confirm(`Delete ${exported.length} exported ${exported.length === 1 ? "assessment" : "assessments"} from this phone? ` +
+        "Check they are pasted into the Risk Register first. This cannot be undone.")) return;
+      for (const a of exported) await deleteAssessment(a.id);
+      clearMsg.textContent = `Deleted ${exported.length}.`;
+      clearButton.textContent = "Delete all exported assessments (0)";
+      clearButton.disabled = true;
+    },
+  }, `Delete all exported assessments (${exported.length})`);
+
   root.replaceChildren(
     h("a", { class: "back", href: "#/" }, "‹ Back"),
     h("h2", { class: "first" }, "Settings"),
@@ -134,6 +149,13 @@ export async function renderSettings(root) {
     h("div", { class: "field" },
       h("label", { for: "review-months" }, "Next review due after (months)"), reviewInput),
     reviewError,
+
+    h("h3", {}, "Clear exported assessments"),
+    h("p", { class: "hint" },
+      "Once an assessment is exported and pasted into the Risk Register, delete it from the phone. " +
+      "This removes only assessments that have been exported."),
+    clearButton,
+    clearMsg,
 
     h("h3", {}, "Storage"),
     h("p", { class: "hint" }, persisted

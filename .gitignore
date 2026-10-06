@@ -2,3 +2,7 @@
 node_modules/
 # Keep the internal project brief off the public website
 Risk Assessment App - Project Brief.md
+# Private workbooks: never publish
+*.xlsx
+*.xls
+*.xlsm

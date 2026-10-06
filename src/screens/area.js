@@ -3,7 +3,7 @@ import { h } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, getSettings } from "../db.js";
 import { createAutosaver } from "../autosave.js";
-import { segmented, ratingChip, setChip, textField } from "../components.js";
+import { segmented, ratingChip, setChip, textField, staffSelect } from "../components.js";
 import { blankArea, areaRatings, residualWarnings, YES, NO, UNASSESSED } from "../assessment-logic.js";
 import { needsActionPrompt } from "../rating.js";
 
@@ -42,9 +42,6 @@ export async function renderArea(root, id, indexText) {
   const notApplicableNote = h("p", { class: "hint" },
     "Marked as not applicable. This area will not be exported as a risk.");
 
-  const staffList = h("datalist", { id: "staff-names" },
-    settings.staff.map((s) => h("option", { value: s })));
-
   const riskSection = h("div", {},
     h("p", { class: "warn" }, content.warnings.noCodes),
     textField({ label: "Risk description", multiline: true, value: data.description, onInput: set("description") }),
@@ -58,7 +55,7 @@ export async function renderArea(root, id, indexText) {
 
     h("h3", {}, "Controls"),
     textField({ label: "Controls in place", multiline: true, value: data.controls, onInput: set("controls") }),
-    textField({ label: "Control owner", value: data.controlOwner, onInput: set("controlOwner"), list: "staff-names" }),
+    staffSelect({ label: "Control owner", value: data.controlOwner, staff: settings.staff, onInput: set("controlOwner") }),
 
     h("h3", {}, "Residual risk (after controls)"),
     segmented({ legend: "Probability", options: scale, value: data.residualProb, onChange: set("residualProb"), className: "five" }),
@@ -78,7 +75,7 @@ export async function renderArea(root, id, indexText) {
 
   const actionFields = h("div", {},
     textField({ label: "Required action", multiline: true, value: data.requiredAction, onInput: set("requiredAction") }),
-    textField({ label: "Action owner", value: data.actionOwner, onInput: set("actionOwner"), list: "staff-names" }),
+    staffSelect({ label: "Action owner", value: data.actionOwner, staff: settings.staff, onInput: set("actionOwner") }),
     segmented({
       legend: "Priority",
       options: content.priorities.map((v) => ({ value: v })),
@@ -147,7 +144,6 @@ export async function renderArea(root, id, indexText) {
     }),
     notApplicableNote,
     riskSection,
-    staffList,
 
     h("div", { class: "nav-bar" },
       h("button", { class: "btn btn-secondary", type: "button", onclick: go(prevHash) },

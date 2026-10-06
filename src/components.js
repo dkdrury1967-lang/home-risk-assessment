@@ -53,3 +53,17 @@ export function textField({ label, value, onInput, multiline = false, list, help
     help ? h("p", { class: "hint" }, help) : null,
     input);
 }
+
+/**
+ * A labelled drop-down of the staff list. The Risk Register only accepts names
+ * from its own staff list, so owners are chosen, not typed. If the saved name
+ * is no longer in the list it stays selectable so nothing is silently lost.
+ */
+export function staffSelect({ label, value, staff, onInput }) {
+  const id = `f-${++groupCounter}`;
+  const names = value && !staff.includes(value) ? [...staff, value] : staff;
+  const select = h("select", { id, onchange: (e) => onInput(e.target.value) },
+    h("option", { value: "" }, "Choose a name…"),
+    names.map((n) => h("option", { value: n, selected: n === value }, n)));
+  return h("div", { class: "field" }, h("label", { for: id }, label), select);
+}

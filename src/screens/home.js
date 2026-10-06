@@ -25,7 +25,12 @@ export async function renderHome(root) {
               h("span", { class: "area-main" },
                 h("span", { class: "area-title" }, a.clientName),
                 h("span", { class: "area-status" },
-                  `${formatDate(a.dateAssessed)} · ${done} of ${total} areas finished`))));
+                  `${formatDate(a.dateAssessed)} · ${done} of ${total} areas finished`),
+                a.exportedAt
+                  ? h("span", { class: "area-status" }, `Exported ${formatDate(a.exportedAt.slice(0, 10))}`)
+                  : done === total
+                    ? h("span", { class: "export-due" }, "Finished, not exported yet. Export now.")
+                    : null)));
         })),
 
     h("a", { class: "btn btn-secondary", href: "#/settings" }, "Settings"),

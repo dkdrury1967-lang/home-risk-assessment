@@ -57,7 +57,7 @@ export async function renderSummary(root, id) {
           area.actionRequired === true
             ? h("span", { class: "area-status" }, `Action${area.priority ? ` (${area.priority})` : ""}: ${area.requiredAction || "details missing"}`)
             : null,
-          checks.length ? h("span", { class: "check" }, "Check: residual is higher than inherent") : null));
+          checks.map((c) => h("span", { class: "check" }, `Check: ${c}`))));
     });
 
   // ---- Heat map ----
@@ -108,6 +108,5 @@ export async function renderSummary(root, id) {
       ? h("p", { class: "empty" }, "No applicable risks recorded yet.")
       : h("ul", { class: "plain areas" }, riskRows),
 
-    h("button", { class: "btn btn-primary", type: "button", disabled: true }, "Export to Excel"),
-    h("p", { class: "hint" }, "Export comes in the next step."));
+    h("a", { class: "btn btn-primary", href: `#/assessment/${id}/export` }, "Export to Excel"));
 }

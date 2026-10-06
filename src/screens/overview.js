@@ -60,6 +60,7 @@ export async function renderOverview(root, id) {
           done === 0 ? "Start with area 1" : `Continue with area ${next + 1}`),
 
     h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/summary` }, "View summary and heat map"),
+    h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/export` }, "Export to Excel"),
 
     h("ul", { class: "plain areas" }, rows),
 
