@@ -1,9 +1,12 @@
 // Export: makes the .xlsx (and a CSV fallback) in the Risk Register layout and
 // hands it to the iPhone Share sheet so it can be saved to Files / OneDrive.
 //
-// Two taps on purpose: "Create export file" builds the file, then "Share" opens
-// the Share sheet straight away. iPhone Safari only allows the Share sheet to
-// open from a tap, so nothing slow can happen between the tap and the sheet.
+// The file is built as soon as this screen opens, so there is a single tap:
+// "Share / Save to Files". (iPhone Safari only allows the Share sheet to open
+// straight from a tap, so the file has to be ready before the tap.)
+//
+// Risk references are only used up once the file has really been shared or
+// downloaded. If the Share sheet is cancelled, nothing is used up.
 import { h } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, saveAssessment, getSettings, saveSettings } from "../db.js";
@@ -42,36 +45,17 @@ export async function renderExport(root, id) {
   const message = h("p", { class: "hint", role: "status" });
   const errorBox = h("p", { class: "error", role: "alert" });
 
-  async function markExported() {
+  // Called once the file has really left the app (shared or downloaded):
+  // fix the risk refs, move the counter on, and mark the assessment exported.
+  async function commitExport() {
+    const fresh = await getSettings();
+    assessment.exportedRefs = preview.refs;
+    fresh.nextRiskRefNumber = Math.max(fresh.nextRiskRefNumber, preview.nextNumber);
     assessment.exportedAt = new Date().toISOString();
     await saveAssessment(assessment);
+    await saveSettings(fresh);
     message.textContent = `Marked as exported on ${formatDate(assessment.exportedAt.slice(0, 10))}. ` +
       "After you have pasted the rows into the Risk Register, delete this assessment from the phone.";
-  }
-
-  // Step 1: build the files. Risk refs are fixed here and saved, so building
-  // the file again later reuses the same refs.
-  async function createFiles(button) {
-    button.disabled = true;
-    errorBox.textContent = "";
-    try {
-      const XLSX = await loadXlsx();
-      const fresh = await getSettings();
-      const { refs, nextNumber } = allocateRefs(assessment, toExport, fresh);
-      assessment.exportedRefs = refs;
-      fresh.nextRiskRefNumber = Math.max(fresh.nextRiskRefNumber, nextNumber);
-      await saveAssessment(assessment);
-      await saveSettings(fresh);
-
-      const rows = buildRows(config, assessment, toExport, refs);
-      const bytes = XLSX.write(buildWorkbook(XLSX, rows), { type: "array", bookType: "xlsx" });
-      const xlsxFile = new File([bytes], exportFileName(assessment, "xlsx"), { type: XLSX_TYPE });
-      const csvFile = new File([buildCsv(rows)], exportFileName(assessment, "csv"), { type: "text/csv" });
-      showFiles(xlsxFile, csvFile, rows.length);
-    } catch (err) {
-      errorBox.textContent = `Could not create the file: ${err.message}`;
-      button.disabled = false;
-    }
   }
 
   function download(file) {
@@ -81,14 +65,14 @@ export async function renderExport(root, id) {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
-    markExported();
+    commitExport();
   }
 
-  // Step 2: share. Called straight from the tap, with the file already built.
+  // Called straight from the tap, with the file already built.
   function share(file) {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       navigator.share({ files: [file], title: file.name })
-        .then(markExported)
+        .then(commitExport)
         .catch((err) => {
           if (err.name !== "AbortError") errorBox.textContent = `Sharing failed: ${err.message}`;
         });
@@ -118,11 +102,23 @@ export async function renderExport(root, id) {
         h("li", {}, "Check the ratings in columns J and O have filled in.")));
   }
 
-  const createButton = h("button", {
-    class: "btn btn-primary", type: "button",
-    disabled: toExport.length === 0,
-    onclick: (e) => createFiles(e.currentTarget),
-  }, assessment.exportedAt ? "Create the export file again" : "Create export file");
+  // Build the files now, using the refs worked out above. Nothing is saved yet.
+  async function prepare() {
+    result.replaceChildren(h("p", { class: "hint", role: "status" }, "Preparing the file…"));
+    errorBox.textContent = "";
+    try {
+      const XLSX = await loadXlsx();
+      const rows = buildRows(config, assessment, toExport, preview.refs);
+      const bytes = XLSX.write(buildWorkbook(XLSX, rows), { type: "array", bookType: "xlsx" });
+      const xlsxFile = new File([bytes], exportFileName(assessment, "xlsx"), { type: XLSX_TYPE });
+      const csvFile = new File([buildCsv(rows)], exportFileName(assessment, "csv"), { type: "text/csv" });
+      showFiles(xlsxFile, csvFile, rows.length);
+    } catch (err) {
+      result.replaceChildren(
+        h("p", { class: "error" }, `Could not prepare the file: ${err.message}`),
+        h("button", { class: "btn btn-secondary", type: "button", onclick: prepare }, "Try again"));
+    }
+  }
 
   root.replaceChildren(
     h("a", { class: "back", href: `#/assessment/${id}/summary` }, "‹ Summary"),
@@ -131,11 +127,11 @@ export async function renderExport(root, id) {
     toExport.length === 0
       ? h("p", { class: "prompt" }, "There are no finished risks to export yet.")
       : h("p", {}, `${toExport.length} ${toExport.length === 1 ? "risk" : "risks"} will be exported, ` +
-          `as ${refText}${assessment.exportedRefs ? "" : ""}.`),
+          `as ${refText}.`),
 
     assessment.exportedAt
       ? h("p", { class: "hint" }, `Last exported on ${formatDate(assessment.exportedAt.slice(0, 10))}. ` +
-          "Creating the file again keeps the same risk references.")
+          "Sharing it again keeps the same risk references.")
       : null,
 
     left.length === 0 ? null :
@@ -148,8 +144,9 @@ export async function renderExport(root, id) {
       "Areas marked not applicable are not exported. The ratings (columns J and O) and Action Overdue (W) " +
       "are left blank so the register's own formulas work them out."),
 
-    createButton,
     errorBox,
     result,
     message);
+
+  if (toExport.length > 0) prepare();
 }

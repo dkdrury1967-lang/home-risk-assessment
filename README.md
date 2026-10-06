@@ -17,7 +17,7 @@ Master Dashboard.
 2. **Start new assessment**, then work through the 16 areas. Everything saves as
    you type. You can close the app and carry on later from Home.
 3. **Summary** shows ratings, actions and the heat map. **Export to Excel** makes the file.
-4. Tap **Create export file**, then **Share / Save to Files** and save it to OneDrive.
+4. The file is built as soon as the Export screen opens. Tap **Share / Save to Files** and save it to OneDrive. (If you cancel the Share sheet nothing is lost and no risk number is used up.)
 5. In Excel, copy the data rows (not the header), click the first empty cell in
    column A of the Risk Register, then **Paste Special > Values** with **Skip
    blanks** ticked. Columns J, O and W are left blank on purpose so the register's
