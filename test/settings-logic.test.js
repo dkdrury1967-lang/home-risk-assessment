@@ -44,3 +44,14 @@ test("adding staff trims, rejects blanks and duplicates", () => {
 test("removing staff", () => {
   assert.deepEqual(removeStaffName(["A", "B", "C"], "B"), ["A", "C"]);
 });
+
+import { cleanEmail } from "../src/settings-logic.js";
+
+test("Registered Manager email: optional, trimmed, must look like an address", () => {
+  assert.equal(cleanEmail(""), "");
+  assert.equal(cleanEmail("   "), "");
+  assert.equal(cleanEmail("  rm@daisycare.co.uk "), "rm@daisycare.co.uk");
+  for (const bad of ["rm", "rm@", "@daisycare.co.uk", "rm@daisycare", "r m@daisycare.co.uk"]) {
+    assert.equal(cleanEmail(bad), null, bad);
+  }
+});

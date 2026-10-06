@@ -12,17 +12,25 @@ Master Dashboard.
 
 ## Using it
 
-1. **Settings (first time):** check the staff list, and set the **next risk
-   number** to follow on from the last risk in the register.
+1. **Settings (first time):** check the staff list, set your own **risk ref prefix**
+   (see "Several assessors" below) and the **Registered Manager's email**.
 2. **Start new assessment**, then work through the 16 areas. Everything saves as
    you type. You can close the app and carry on later from Home.
-3. **Summary** shows ratings, actions and the heat map. **Export to Excel** makes the file.
-4. The file is built as soon as the Export screen opens. Tap **Share / Save to Files** and save it to OneDrive. (If you cancel the Share sheet nothing is lost and no risk number is used up.)
-5. In Excel, copy the data rows (not the header), click the first empty cell in
-   column A of the Risk Register, then **Paste Special > Values** with **Skip
+3. **Summary** shows ratings, actions and the heat map (switch between residual and
+   inherent). **Export / Email to RM** opens the export screen.
+4. The file is built as soon as the export screen opens. Tap **Email to RM**, choose
+   **Mail** in the Share sheet (use your **work** email account), and send it to the
+   Registered Manager. The address is shown on the screen with a **Copy address**
+   button. (If you cancel the Share sheet nothing is lost and no risk number is used up.)
+5. **The Registered Manager** adds the rows to the Risk Register: open the file in
+   **Excel on a computer**, copy the data rows (not the header), click the first empty
+   cell in column A of the Risk Register, then **Paste Special > Values** with **Skip
    blanks** ticked. Columns J, O and W are left blank on purpose so the register's
-   formulas keep working.
-6. Delete the assessment from the phone (Settings > Delete all exported assessments).
+   formulas keep working. **The browser version of Excel has no Skip blanks option**,
+   so do not paste from there.
+6. Once the Registered Manager confirms the rows are in the register, delete the
+   assessment from the phone (Settings > Delete all exported assessments) **and delete
+   the sent email** from your Sent and Deleted items.
 
 Never enter key-safe codes, door codes or passwords. The app warns about this.
 
@@ -33,6 +41,10 @@ same ref and the Risk Register would hold two different risks with one reference
 The register also needs every ref to have a value: its Helper sheet (used by Record
 Lookup) skips any row where the Risk Ref is blank, so the ref **cannot** be left
 blank for Excel to fill in later.
+
+Only the Registered Manager updates the Master Dashboard, so there is a single
+person pasting, but the refs are still made on each assessor's phone, so the rule
+below still applies.
 
 **Rule: every assessor uses their own prefix.** In the app: **Settings > Risk reference numbers**.
 
@@ -52,6 +64,21 @@ blank for Excel to fill in later.
 Each person also sets up their own phone: the staff list must match the **Staff
 Names** list in the workbook, and each person sets their own review interval.
 
+## Emailing the export
+
+The app has no server, so it cannot send email itself. **Email to RM** hands the file
+to the iPhone Share sheet, where Mail is chosen and the address is entered (copy it
+from the export screen, or save the Registered Manager as an iPhone contact).
+
+- The email **subject and message do not contain the client's name**. The attached file's
+  name and contents do, so treat the email as client data.
+- Use **work email accounts**, not personal ones.
+- Emailed copies stay in Sent, Deleted and on the mail server. Deleting the assessment
+  from the phone does **not** remove them. Delete the sent email too.
+- The provider's DPIA should cover sending these files by email.
+- The Registered Manager's address is stored only on each phone (Settings). It is not
+  in the code, because the repository is public.
+
 ## Data protection
 
 - The data is special-category (health) information. The assessor is responsible
@@ -60,6 +87,8 @@ Names** list in the workbook, and each person sets their own review interval.
 - iOS can clear a website's stored data if it is not used for a while. **Export
   promptly.** Home shows "Finished, not exported yet" until you do.
 - There is no backup of assessments on the phone. **The export file is the backup.**
+- Once the Registered Manager has confirmed the rows are in the register, delete the
+  assessment from the phone and the sent email from the mailbox.
 
 ## Changing things
 

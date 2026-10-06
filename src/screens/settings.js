@@ -1,9 +1,9 @@
 // Settings screen: staff list, risk ref numbering and review interval.
 // Every change is saved straight away.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { getSettings, saveSettings, listAssessments, deleteAssessment } from "../db.js";
 import {
-  formatRiskRef, cleanPrefix, parseRefNumber, parseReviewMonths,
+  formatRiskRef, cleanPrefix, parseRefNumber, parseReviewMonths, cleanEmail,
   addStaffName, removeStaffName,
 } from "../settings-logic.js";
 
@@ -30,7 +30,7 @@ export async function renderSettings(root) {
   });
 
   function drawStaff() {
-    staffList.replaceChildren(...settings.staff.map((name) =>
+    render(staffList, ...settings.staff.map((name) =>
       h("li", {},
         h("span", {}, name),
         h("button", {
@@ -110,6 +110,22 @@ export async function renderSettings(root) {
     },
   });
 
+  // ---- Registered Manager's email (used on the Export screen) ----
+  const rmError = h("p", { class: "error", role: "alert" });
+  const rmInput = h("input", {
+    id: "rm-email", type: "email", inputmode: "email", autocomplete: "off",
+    autocapitalize: "none", spellcheck: "false", value: settings.rmEmail || "",
+    placeholder: "name@yourorganisation.co.uk",
+    onchange: async (e) => {
+      const v = cleanEmail(e.target.value);
+      rmError.textContent = v === null ? "That does not look like an email address." : "";
+      if (v === null) return;
+      settings.rmEmail = v;
+      e.target.value = v;
+      await save();
+    },
+  });
+
   // ---- Delete exported assessments ----
   const exported = (await listAssessments()).filter((a) => a.exportedAt);
   const clearMsg = h("p", { class: "hint", role: "status" });
@@ -125,7 +141,7 @@ export async function renderSettings(root) {
     },
   }, `Delete all exported assessments (${exported.length})`);
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "back", href: "#/" }, "‹ Back"),
     h("h2", { class: "first" }, "Settings"),
     savedMsg,
@@ -151,9 +167,17 @@ export async function renderSettings(root) {
       h("label", { for: "review-months" }, "Next review due after (months)"), reviewInput),
     reviewError,
 
+    h("h3", {}, "Registered Manager"),
+    h("p", { class: "hint" },
+      "Exported assessments are emailed to the Registered Manager, who adds them to the Risk Register. " +
+      "Use a work email address. It is stored only on this phone."),
+    h("div", { class: "field" }, h("label", { for: "rm-email" }, "Registered Manager's email"), rmInput),
+    rmError,
+
     h("h3", {}, "Clear exported assessments"),
     h("p", { class: "hint" },
-      "Once an assessment is exported and pasted into the Risk Register, delete it from the phone. " +
+      "Once the Registered Manager has confirmed an assessment is in the Risk Register, delete it from the phone, " +
+      "and delete the sent email from your Sent and Deleted items. " +
       "This removes only assessments that have been exported."),
     clearButton,
     clearMsg,

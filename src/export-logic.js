@@ -134,3 +134,18 @@ export function exportFileName(assessment, ext) {
   const client = assessment.clientName.replace(/[\\/:*?"<>|\u0000-\u001f]/g, "").replace(/\s+/g, " ").trim() || "Client";
   return `Risk Assessment - ${client} - ${assessment.dateAssessed}.${ext}`;
 }
+
+/**
+ * Subject and message for "Email to RM". The client's name is deliberately NOT
+ * included: subject lines and previews are often visible outside the mailbox.
+ */
+export function emailMessage(assessment, count, refText) {
+  const date = formatDate(assessment.dateAssessed);
+  const risks = `${count} ${count === 1 ? "risk" : "risks"}`;
+  return {
+    subject: `Risk assessment - ${assessment.assessedBy} - ${date} - ${risks}`,
+    text: `Risk assessment export attached: ${risks}${refText ? `, refs ${refText}` : ""}.\n` +
+      `Assessed by ${assessment.assessedBy} on ${date}.\n` +
+      "Please add to the Risk Register.",
+  };
+}

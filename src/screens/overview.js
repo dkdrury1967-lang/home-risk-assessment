@@ -1,6 +1,6 @@
 // Overview of one assessment: every risk area with its status, so you can
 // jump to any area, continue where you left off, or delete the assessment.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, deleteAssessment } from "../db.js";
 import { ratingChip } from "../components.js";
@@ -21,7 +21,7 @@ export async function renderOverview(root, id) {
     loadContent(), loadRatingConfig(), getAssessment(id),
   ]);
   if (!assessment) {
-    root.replaceChildren(
+    render(root, 
       h("a", { class: "back", href: "#/" }, "‹ Home"),
       h("p", {}, "That assessment could not be found."));
     return;
@@ -44,7 +44,7 @@ export async function renderOverview(root, id) {
           ? ratingChip(config, residual) : null));
   });
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "back", href: "#/" }, "‹ Home"),
     h("h2", { class: "first" }, assessment.clientName),
     h("p", { class: "hint" },
@@ -60,7 +60,7 @@ export async function renderOverview(root, id) {
           done === 0 ? "Start with area 1" : `Continue with area ${next + 1}`),
 
     h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/summary` }, "View summary and heat map"),
-    h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/export` }, "Export to Excel"),
+    h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/export` }, "Export / Email to RM"),
 
     h("ul", { class: "plain areas" }, rows),
 

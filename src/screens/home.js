@@ -1,5 +1,5 @@
 // Home screen: start a new assessment, see saved ones, open Settings.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { listAssessments } from "../db.js";
 import { progress } from "../assessment-logic.js";
@@ -12,7 +12,7 @@ export async function renderHome(root) {
   const ids = content.areas.map((a) => a.id);
   saved.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "btn btn-primary", href: "#/assessment/new" }, "Start new assessment"),
 
     h("h2", {}, "Saved assessments"),
@@ -29,7 +29,7 @@ export async function renderHome(root) {
                 a.exportedAt
                   ? h("span", { class: "area-status" }, `Exported ${formatDate(a.exportedAt.slice(0, 10))}`)
                   : done === total
-                    ? h("span", { class: "export-due" }, "Finished, not exported yet. Export now.")
+                    ? h("span", { class: "export-due" }, "Finished, not exported yet. Email to RM now.")
                     : null)));
         })),
 

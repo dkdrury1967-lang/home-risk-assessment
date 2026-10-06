@@ -14,3 +14,12 @@ export function h(tag, attrs = {}, ...children) {
   }
   return el;
 }
+
+/**
+ * Replace everything inside a parent with the given pieces. Pieces that are
+ * empty (null, undefined, false) are skipped. The browser's own
+ * replaceChildren would print them as the word "null".
+ */
+export function render(parent, ...nodes) {
+  parent.replaceChildren(...nodes.flat().filter((n) => n !== null && n !== undefined && n !== false));
+}

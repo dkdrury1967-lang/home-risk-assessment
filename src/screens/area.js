@@ -1,5 +1,5 @@
 // One risk area. Every change is autosaved. Ratings update live.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, getSettings } from "../db.js";
 import { createAutosaver } from "../autosave.js";
@@ -120,7 +120,7 @@ export async function renderArea(root, id, indexText) {
   const prevHash = index === 0 ? `#/assessment/${id}` : `#/assessment/${id}/area/${index - 1}`;
   const nextHash = index === total - 1 ? `#/assessment/${id}/summary` : `#/assessment/${id}/area/${index + 1}`;
 
-  root.replaceChildren(
+  render(root, 
     h("div", { class: "top-row" },
       h("a", { class: "back", href: `#/assessment/${id}`, onclick: () => saver.flush() }, "‹ Overview"),
       savedNote),

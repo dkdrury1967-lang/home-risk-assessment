@@ -10,7 +10,8 @@
     "riskRefPrefix": "RR",
     "nextRiskRefNumber": 1,
     "riskRefDigits": 3,
-    "reviewIntervalMonths": 12
+    "reviewIntervalMonths": 12,
+    "rmEmail": ""
   },
 
   "warnings": {

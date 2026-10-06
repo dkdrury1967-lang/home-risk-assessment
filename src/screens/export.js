@@ -7,13 +7,13 @@
 //
 // Risk references are only used up once the file has really been shared or
 // downloaded. If the Share sheet is cancelled, nothing is used up.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, saveAssessment, getSettings, saveSettings } from "../db.js";
 import { loadXlsx } from "../xlsx-loader.js";
 import { areaStatus, blankArea, YES } from "../assessment-logic.js";
 import {
-  exportableAreaIds, allocateRefs, buildRows, buildWorkbook, buildCsv, exportFileName,
+  exportableAreaIds, allocateRefs, buildRows, buildWorkbook, buildCsv, exportFileName, emailMessage,
 } from "../export-logic.js";
 import { formatDate } from "../dates.js";
 
@@ -24,7 +24,7 @@ export async function renderExport(root, id) {
     loadContent(), loadRatingConfig(), getAssessment(id), getSettings(),
   ]);
   if (!assessment) {
-    root.replaceChildren(
+    render(root, 
       h("a", { class: "back", href: "#/" }, "‹ Home"),
       h("p", {}, "That assessment could not be found."));
     return;
@@ -55,7 +55,8 @@ export async function renderExport(root, id) {
     await saveAssessment(assessment);
     await saveSettings(fresh);
     message.textContent = `Marked as exported on ${formatDate(assessment.exportedAt.slice(0, 10))}. ` +
-      "After you have pasted the rows into the Risk Register, delete this assessment from the phone.";
+      "Once the Registered Manager confirms it is in the Risk Register, delete this assessment from the phone " +
+      "and delete the sent email from your Sent and Deleted items.";
   }
 
   function download(file) {
@@ -68,10 +69,13 @@ export async function renderExport(root, id) {
     commitExport();
   }
 
-  // Called straight from the tap, with the file already built.
-  function share(file) {
+  // Called straight from the tap, with the file already built. The Share sheet
+  // is where "Mail" (or Files, AirDrop...) is chosen. The subject and message
+  // are filled in for Mail; other destinations ignore them.
+  function share(file, count) {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: file.name })
+      const email = emailMessage(assessment, count, refText);
+      navigator.share({ files: [file], title: email.subject, text: email.text })
         .then(commitExport)
         .catch((err) => {
           if (err.name !== "AbortError") errorBox.textContent = `Sharing failed: ${err.message}`;
@@ -81,30 +85,62 @@ export async function renderExport(root, id) {
     }
   }
 
+  async function copyAddress(button) {
+    try {
+      await navigator.clipboard.writeText(settings.rmEmail);
+      button.textContent = "Copied";
+    } catch {
+      button.textContent = "Could not copy: select the address instead";
+    }
+    setTimeout(() => (button.textContent = "Copy address"), 2500);
+  }
+
+  // Who the email goes to. The address is set in Settings on each phone.
+  function recipientBox() {
+    if (!settings.rmEmail) {
+      return h("p", { class: "hint" },
+        "Add the Registered Manager's email in ",
+        h("a", { href: "#/settings" }, "Settings"),
+        " so it can be copied here.");
+    }
+    return h("div", { class: "to-box" },
+      h("p", { class: "tight" }, "Send to:"),
+      h("p", { class: "to-address" }, settings.rmEmail),
+      h("button", { class: "btn btn-secondary", type: "button", onclick: (e) => copyAddress(e.currentTarget) },
+        "Copy address"));
+  }
+
   function showFiles(xlsxFile, csvFile, count) {
-    result.replaceChildren(
+    render(result, 
       h("div", { class: "ok-box" },
         h("p", { class: "tight" }, "File ready"),
         h("p", {}, `${xlsxFile.name}`),
         h("p", { class: "hint" }, `${count} ${count === 1 ? "risk" : "risks"}, refs ${refText}.`)),
-      h("button", { class: "btn btn-primary", type: "button", onclick: () => share(xlsxFile) },
-        "Share / Save to Files"),
+
+      recipientBox(),
+      h("button", { class: "btn btn-primary", type: "button", onclick: () => share(xlsxFile, count) },
+        "Email to RM"),
+      h("p", { class: "hint" },
+        "This opens the Share sheet. Choose Mail (use your work email account, not a personal one) " +
+        "and paste or pick the address in the To line. Save to Files and AirDrop are in the same sheet."),
       h("button", { class: "btn btn-secondary", type: "button", onclick: () => download(xlsxFile) },
         "Download .xlsx"),
       h("button", { class: "btn btn-secondary", type: "button", onclick: () => download(csvFile) },
         "Download CSV (backup option)"),
-      h("h3", {}, "Putting it in the Risk Register"),
-      h("ol", { class: "steps" },
-        h("li", {}, "Open the file in Excel and select the data rows (not the header row)."),
-        h("li", {}, "Copy them."),
-        h("li", {}, "In the Risk Register tab, click the first empty cell in column A."),
-        h("li", {}, "Use Paste Special > Values, tick Skip blanks, and click OK."),
-        h("li", {}, "Check the ratings in columns J and O have filled in.")));
+
+      h("details", { class: "guidance" },
+        h("summary", {}, "For the person updating the Risk Register"),
+        h("ol", { class: "steps" },
+          h("li", {}, "Use Excel on a computer (the desktop app). The browser version of Excel has no Skip blanks option."),
+          h("li", {}, "Open the file and select the data rows (not the header row), then copy them."),
+          h("li", {}, "In the Risk Register tab, click the first empty cell in column A."),
+          h("li", {}, "Use Paste Special > Values, tick Skip blanks, and click OK."),
+          h("li", {}, "Check the ratings in columns J and O have filled in."))));
   }
 
   // Build the files now, using the refs worked out above. Nothing is saved yet.
   async function prepare() {
-    result.replaceChildren(h("p", { class: "hint", role: "status" }, "Preparing the file…"));
+    render(result, h("p", { class: "hint", role: "status" }, "Preparing the file…"));
     errorBox.textContent = "";
     try {
       const XLSX = await loadXlsx();
@@ -114,13 +150,13 @@ export async function renderExport(root, id) {
       const csvFile = new File([buildCsv(rows)], exportFileName(assessment, "csv"), { type: "text/csv" });
       showFiles(xlsxFile, csvFile, rows.length);
     } catch (err) {
-      result.replaceChildren(
+      render(result, 
         h("p", { class: "error" }, `Could not prepare the file: ${err.message}`),
         h("button", { class: "btn btn-secondary", type: "button", onclick: prepare }, "Try again"));
     }
   }
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "back", href: `#/assessment/${id}/summary` }, "‹ Summary"),
     h("h2", { class: "first" }, `Export: ${assessment.clientName}`),
 
@@ -141,6 +177,7 @@ export async function renderExport(root, id) {
           h("li", {}, h("a", { href: `#/assessment/${id}/area/${i}` }, `${i + 1}. ${def.title}`))))),
 
     h("p", { class: "hint" },
+      "The Registered Manager adds exported assessments to the Risk Register. " +
       "Areas marked not applicable are not exported. The ratings (columns J and O) and Action Overdue (W) " +
       "are left blank so the register's own formulas work them out."),
 

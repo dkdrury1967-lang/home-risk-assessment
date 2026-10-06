@@ -1,6 +1,6 @@
 // Summary: the risks with their ratings, the number of actions, a 5x5 heat
 // map of residual risks, and a list of areas not finished yet.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment } from "../db.js";
 import { ratingChip, segmented } from "../components.js";
@@ -15,7 +15,7 @@ export async function renderSummary(root, id) {
     loadContent(), loadRatingConfig(), getAssessment(id),
   ]);
   if (!assessment) {
-    root.replaceChildren(
+    render(root, 
       h("a", { class: "back", href: "#/" }, "‹ Home"),
       h("p", {}, "That assessment could not be found."));
     return;
@@ -103,7 +103,7 @@ export async function renderSummary(root, id) {
     const omitted = notes.length
       ? h("p", { class: "hint" }, `Not shown: ${notes.join(", ")}.`) : null;
 
-    heatBox.replaceChildren(table, legend, omitted);
+    render(heatBox, table, legend, omitted);
   }
   drawHeat("residual");
 
@@ -122,7 +122,7 @@ export async function renderSummary(root, id) {
   const priorityText = counts.actions === 0 ? "" :
     ` (High ${p.High}, Medium ${p.Medium}, Low ${p.Low}${p["Not set"] ? `, no priority ${p["Not set"]}` : ""})`;
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "back", href: `#/assessment/${id}` }, "‹ Overview"),
     h("h2", { class: "first" }, `Summary: ${assessment.clientName}`),
     h("p", { class: "hint" },
@@ -146,5 +146,5 @@ export async function renderSummary(root, id) {
       ? h("p", { class: "empty" }, "No applicable risks recorded yet.")
       : h("ul", { class: "plain areas" }, riskRows),
 
-    h("a", { class: "btn btn-primary", href: `#/assessment/${id}/export` }, "Export to Excel"));
+    h("a", { class: "btn btn-primary", href: `#/assessment/${id}/export` }, "Export / Email to RM"));
 }

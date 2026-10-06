@@ -80,7 +80,7 @@ ul.plain { list-style: none; padding: 0; margin: 8px 0; }
 ul.staff li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); border-bottom: 1px solid var(--line); }
 
 /* 16px+ text in fields stops iPhone zooming in when you tap them */
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], input[type="email"] {
   width: 100%; min-height: var(--tap); padding: 8px 12px;
   font: inherit; color: var(--ink); background: var(--paper);
   border: 2px solid var(--ink); border-radius: 12px;
@@ -192,3 +192,7 @@ ul.areas li { border-bottom: 1px solid var(--line); }
 .legend li { border: 2px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 0.9rem; }
 .legend li b { margin-right: 2px; }
 .seg.two .seg-opt span { font-size: 0.85rem; }
+
+/* Email to RM */
+.to-box { border: 2px solid var(--ink); border-radius: 12px; padding: 4px 14px 2px; margin: 14px 0; }
+.to-address { font-weight: 700; word-break: break-all; margin: 0 0 4px; user-select: all; -webkit-user-select: all; }

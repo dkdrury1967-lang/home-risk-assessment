@@ -150,3 +150,23 @@ test("file name is safe and follows the brief", () => {
   a.clientName = 'Mr O\'Neil / "Jim": <b>';
   assert.equal(exportFileName(a, "csv"), "Risk Assessment - Mr O'Neil Jim b - 2026-10-06.csv");
 });
+
+import { emailMessage } from "../src/export-logic.js";
+
+test("email subject and message never contain the client's name", () => {
+  const a = sample(); // client "Mrs A. Smith"
+  const m = emailMessage(a, 2, "RR008 to RR009");
+  assert.equal(m.subject, "Risk assessment - Sarah Collins - 06/10/2026 - 2 risks");
+  for (const part of [m.subject, m.text]) {
+    assert.ok(!part.includes("Smith"), "client name leaked");
+    assert.ok(!part.includes("Mrs"), "client name leaked");
+  }
+  assert.match(m.text, /2 risks, refs RR008 to RR009/);
+  assert.match(m.text, /Please add to the Risk Register/);
+});
+
+test("email wording for a single risk", () => {
+  const m = emailMessage(sample(), 1, "RR008");
+  assert.match(m.subject, /1 risk$/);
+  assert.match(m.text, /1 risk, refs RR008/);
+});

@@ -1,5 +1,5 @@
 // Start screen: client name, assessor, dates.
-import { h } from "../ui.js";
+import { h, render } from "../ui.js";
 import { loadContent } from "../content.js";
 import { getSettings, saveAssessment } from "../db.js";
 import { newAssessment, todayISO, addMonthsISO } from "../assessment-logic.js";
@@ -14,7 +14,7 @@ export async function renderStart(root) {
   const [content, settings] = await Promise.all([loadContent(), getSettings()]);
 
   if (settings.staff.length === 0) {
-    root.replaceChildren(
+    render(root, 
       h("a", { class: "back", href: "#/" }, "‹ Back"),
       h("p", {}, "Add at least one name to the staff list before starting."),
       h("a", { class: "btn btn-primary", href: "#/settings" }, "Go to Settings"));
@@ -70,7 +70,7 @@ export async function renderStart(root) {
     error,
     h("button", { class: "btn btn-primary", type: "submit" }, "Begin assessment"));
 
-  root.replaceChildren(
+  render(root, 
     h("a", { class: "back", href: "#/" }, "‹ Back"),
     h("h2", { class: "first" }, "New assessment"),
     h("p", { class: "warn" }, content.warnings.noCodes),

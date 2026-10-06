@@ -4,7 +4,7 @@
 // IMPORTANT: when you change any app file, change CACHE_VERSION below. That
 // tells the phone to fetch the new files. Add any new file to FILES.
 
-const CACHE_VERSION = "v14";
+const CACHE_VERSION = "v16";
 const CACHE_NAME = `risk-assessment-${CACHE_VERSION}`;
 
 const FILES = [

@@ -41,3 +41,13 @@ export function addStaffName(staff, name) {
 export function removeStaffName(staff, name) {
   return staff.filter((s) => s !== name);
 }
+
+/**
+ * Registered Manager's email: trimmed. Empty is allowed (it is optional).
+ * Returns null if it does not look like an email address.
+ */
+export function cleanEmail(text) {
+  const t = String(text).trim();
+  if (t === "") return "";
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t) ? t : null;
+}
