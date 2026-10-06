@@ -5,9 +5,10 @@ import { renderSettings } from "./screens/settings.js";
 import { renderStart } from "./screens/start.js";
 import { renderOverview } from "./screens/overview.js";
 import { renderArea } from "./screens/area.js";
+import { renderSummary } from "./screens/summary.js";
 import { flushCurrent } from "./autosave.js";
 
-const APP_VERSION = "0.3.0";
+const APP_VERSION = "0.4.0";
 
 const root = document.getElementById("screen");
 const statusEl = document.getElementById("status");
@@ -61,6 +62,7 @@ const routes = [
   [/^#\/assessment\/new$/, renderStart],
   [/^#\/assessment\/([^/]+)$/, renderOverview],
   [/^#\/assessment\/([^/]+)\/area\/(\d+)$/, renderArea],
+  [/^#\/assessment\/([^/]+)\/summary$/, renderSummary],
 ];
 
 async function showScreen() {

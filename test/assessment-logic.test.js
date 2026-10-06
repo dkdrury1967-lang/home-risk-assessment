@@ -75,3 +75,46 @@ test("progress counts complete and not-applicable areas", () => {
   a.areas.c = done();
   assert.equal(firstUnfinishedIndex(config, a, ["a", "b", "c"]), -1);
 });
+
+import { residualWarnings, heatmap, summaryCounts } from "../src/assessment-logic.js";
+
+test("warns when residual is higher than inherent, on either axis", () => {
+  assert.deepEqual(residualWarnings(config, done()), []); // High/High -> Low/Low
+  const same = done({ residualProb: "High", residualImpact: "High" });
+  assert.deepEqual(residualWarnings(config, same), []);
+  const probUp = done({ inherentProb: "Low", residualProb: "High" });
+  assert.equal(residualWarnings(config, probUp).length, 1);
+  assert.match(residualWarnings(config, probUp)[0], /probability/i);
+  const both = done({ inherentProb: "Low", inherentImpact: "Low", residualProb: "High", residualImpact: "High" });
+  assert.equal(residualWarnings(config, both).length, 2);
+  // not answered yet: no warning
+  assert.deepEqual(residualWarnings(config, blankArea()), []);
+});
+
+test("heat map puts residual risks in the right cell", () => {
+  const ids = ["a", "b", "c", "d"];
+  const a = newAssessment({ id: "x", clientName: "A", assessedBy: "B", dateAssessed: "d", nextReviewDue: "d", areaIds: ids, now: "t" });
+  a.areas.a = done({ residualProb: "High", residualImpact: "Very high" });
+  a.areas.b = done({ residualProb: "High", residualImpact: "Very high" });
+  a.areas.c = done({ residualProb: "Very Low", residualImpact: "Very Low" });
+  a.areas.d = { ...done(), applicable: "no" }; // not applicable: left out
+  const map = heatmap(config, a, ids);
+  assert.equal(map.length, 5);
+  assert.ok(map.every((row) => row.length === 5));
+  // rows: Very high, High, Medium, Low, Very Low. columns: Very Low ... Very high
+  assert.deepEqual(map[1][4].areas, [1, 2]);
+  assert.equal(map[1][4].rating, "Critical");
+  assert.deepEqual(map[4][0].areas, [3]);
+  assert.equal(map[4][0].rating, "Sustainable");
+  assert.equal(map.flat().reduce((n, c) => n + c.areas.length, 0), 3);
+});
+
+test("summary counts risks and actions by priority", () => {
+  const ids = ["a", "b", "c"];
+  const a = newAssessment({ id: "x", clientName: "A", assessedBy: "B", dateAssessed: "d", nextReviewDue: "d", areaIds: ids, now: "t" });
+  a.areas.a = done({ actionRequired: true, priority: "High" });
+  a.areas.b = done({ actionRequired: true, priority: "" });
+  a.areas.c = { ...blankArea(), applicable: "no" };
+  assert.deepEqual(summaryCounts(config, a, ids),
+    { risks: 2, actions: 2, byPriority: { High: 1, Medium: 0, Low: 0, "Not set": 1 } });
+});

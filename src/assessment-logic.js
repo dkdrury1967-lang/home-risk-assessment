@@ -110,3 +110,56 @@ export function firstUnfinishedIndex(config, assessment, areaIds) {
     return s !== "complete" && s !== "not-applicable";
   });
 }
+
+/**
+ * Warnings when residual risk looks higher than inherent risk. Controls should
+ * only ever lower a risk, so this usually means a slip. It is a warning, not
+ * a block. Returns a list of messages (empty when everything is fine).
+ */
+export function residualWarnings(config, area) {
+  const rank = (level) => config.levels.length - config.levels.indexOf(level); // higher = worse
+  const warnings = [];
+  const higher = (inherent, residual) =>
+    config.levels.includes(inherent) && config.levels.includes(residual) &&
+    rank(residual) > rank(inherent);
+  if (higher(area.inherentProb, area.residualProb)) {
+    warnings.push(`Residual probability (${area.residualProb}) is higher than inherent (${area.inherentProb}).`);
+  }
+  if (higher(area.inherentImpact, area.residualImpact)) {
+    warnings.push(`Residual impact (${area.residualImpact}) is higher than inherent (${area.inherentImpact}).`);
+  }
+  return warnings;
+}
+
+/**
+ * The 5x5 heat map of residual risks. Returns rows from highest probability
+ * to lowest; each row has one cell per impact, lowest impact first, matching
+ * the table layout in the brief. Each cell lists the area numbers (1-based)
+ * whose residual risk falls there. Only applicable areas are counted.
+ */
+export function heatmap(config, assessment, areaIds) {
+  const impacts = [...config.levels].reverse(); // Very Low ... Very high
+  return config.levels.map((probability) =>
+    impacts.map((impact) => ({
+      probability,
+      impact,
+      rating: getRating(config, probability, impact),
+      areas: areaIds
+        .map((id, i) => ({ area: assessment.areas[id], number: i + 1 }))
+        .filter(({ area }) => area && area.applicable === YES &&
+          area.residualProb === probability && area.residualImpact === impact)
+        .map(({ number }) => number),
+    })));
+}
+
+/** Counts for the summary screen. */
+export function summaryCounts(config, assessment, areaIds) {
+  const applicable = areaIds.filter((id) => assessment.areas[id]?.applicable === YES);
+  const withAction = applicable.filter((id) => assessment.areas[id].actionRequired === true);
+  const byPriority = { High: 0, Medium: 0, Low: 0, "Not set": 0 };
+  for (const id of withAction) {
+    const p = assessment.areas[id].priority;
+    byPriority[p in byPriority ? p : "Not set"]++;
+  }
+  return { risks: applicable.length, actions: withAction.length, byPriority };
+}

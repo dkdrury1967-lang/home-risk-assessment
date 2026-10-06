@@ -4,7 +4,7 @@ import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment, getSettings } from "../db.js";
 import { createAutosaver } from "../autosave.js";
 import { segmented, ratingChip, setChip, textField } from "../components.js";
-import { blankArea, areaRatings, YES, NO, UNASSESSED } from "../assessment-logic.js";
+import { blankArea, areaRatings, residualWarnings, YES, NO, UNASSESSED } from "../assessment-logic.js";
 import { needsActionPrompt } from "../rating.js";
 
 export async function renderArea(root, id, indexText) {
@@ -36,6 +36,7 @@ export async function renderArea(root, id, indexText) {
   const inherentChip = ratingChip(config, null, "Inherent: ");
   const residualChip = ratingChip(config, null, "Residual: ");
   const actionPrompt = h("p", { class: "prompt", role: "status" });
+  const residualWarning = h("p", { class: "warn", role: "status" });
 
   // ---- Sections ----
   const notApplicableNote = h("p", { class: "hint" },
@@ -63,6 +64,7 @@ export async function renderArea(root, id, indexText) {
     segmented({ legend: "Probability", options: scale, value: data.residualProb, onChange: set("residualProb"), className: "five" }),
     segmented({ legend: "Impact", options: scale, value: data.residualImpact, onChange: set("residualImpact"), className: "five" }),
     h("p", {}, residualChip),
+    residualWarning,
 
     h("h3", {}, "Action"),
     actionPrompt,
@@ -99,6 +101,11 @@ export async function renderArea(root, id, indexText) {
     notApplicableNote.hidden = data.applicable !== NO;
     actionFields.hidden = data.actionRequired !== true;
 
+    const warnings = residualWarnings(config, data);
+    residualWarning.hidden = warnings.length === 0;
+    residualWarning.textContent = warnings.length
+      ? `${warnings.join(" ")} Controls should lower a risk. Check this is right.` : "";
+
     if (needsActionPrompt(residual) && data.actionRequired === null) {
       actionPrompt.textContent = `Residual risk is ${residual}. An action is expected. Please answer below.`;
       actionPrompt.hidden = false;
@@ -114,7 +121,7 @@ export async function renderArea(root, id, indexText) {
   // ---- Navigation ----
   const go = (hash) => async () => { await saver.flush(); location.hash = hash; };
   const prevHash = index === 0 ? `#/assessment/${id}` : `#/assessment/${id}/area/${index - 1}`;
-  const nextHash = index === total - 1 ? `#/assessment/${id}` : `#/assessment/${id}/area/${index + 1}`;
+  const nextHash = index === total - 1 ? `#/assessment/${id}/summary` : `#/assessment/${id}/area/${index + 1}`;
 
   root.replaceChildren(
     h("div", { class: "top-row" },

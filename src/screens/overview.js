@@ -55,9 +55,11 @@ export async function renderOverview(root, id) {
       h("div", { class: "bar-fill", style: `width:${(done / total) * 100}%` })),
 
     next === -1
-      ? h("p", { class: "hint" }, "All areas are finished. The summary and export come in the next step.")
+      ? h("p", { class: "hint" }, "All areas are finished.")
       : h("a", { class: "btn btn-primary", href: `#/assessment/${id}/area/${next}` },
           done === 0 ? "Start with area 1" : `Continue with area ${next + 1}`),
+
+    h("a", { class: "btn btn-secondary", href: `#/assessment/${id}/summary` }, "View summary and heat map"),
 
     h("ul", { class: "plain areas" }, rows),
 
