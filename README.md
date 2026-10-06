@@ -64,13 +64,33 @@ below still applies.
 Each person also sets up their own phone: the staff list must match the **Staff
 Names** list in the workbook, and each person sets their own review interval.
 
+## App passcode (optional)
+
+In **Settings > App passcode** you can set a 6-digit passcode.
+
+- The app is locked when opened, and locks again after being away for the time chosen
+  in Settings (immediately, 1, 5 or 15 minutes; the default is 5). **Lock the app now**
+  is on the Home screen and in Settings.
+- While the app is away from the screen its contents are hidden. (iOS decides when it
+  takes the app-switcher picture, so this helps but cannot be guaranteed.)
+- After 5 wrong tries in a row there is a wait of 30 seconds, doubling each time (up to 15
+  minutes). The wait survives closing the app.
+- Easy passcodes (111111, 123456) are refused.
+- **This is a screen lock, not encryption.** The stored assessments are not encrypted, and
+  it is **not a substitute for the phone's own passcode**, which must stay on.
+- **A forgotten passcode cannot be recovered.** Nothing is stored anywhere else. On the lock
+  screen, **Forgot the passcode?** erases all assessments and settings on that phone, and
+  the app starts fresh. Exported and emailed files are not affected.
+- The passcode itself is never stored, only a salted hash. It is separate on each phone.
+- The length is set by `PIN_LENGTH` in `src/passcode-logic.js`.
+
 ## Emailing the export
 
 The app has no server, so it cannot send email itself. **Email to RM** hands the file
 to the iPhone Share sheet, where Mail is chosen and the address is entered (copy it
 from the export screen, or save the Registered Manager as an iPhone contact).
 
-- The email **subject and message do not contain the client's name**. The attached file's
+- iPhone Mail fills in the **message** and attaches the file but leaves the **Subject blank** (iOS ignores it when sharing a file). Type a subject such as "Risk assessment", or send without one. The message does not contain the client's name. The attached file's
   name and contents do, so treat the email as client data.
 - Use **work email accounts**, not personal ones.
 - Emailed copies stay in Sent, Deleted and on the mail server. Deleting the assessment
@@ -98,7 +118,7 @@ from the export screen, or save the Registered Manager as an iPhone contact).
 | Starting staff list for a new install | `src/data/risk-areas.json` > `defaults.staff` | Only used the first time the app is opened on a phone. |
 | Questions, guidance, warnings, priorities | `src/data/risk-areas.json` | Keep each area's `id` unchanged once assessments exist. |
 | Rating table and colours | `src/config/rating-matrix.json` | Also change the table in the workbook (Lists tab) so they agree. Run the tests: they check the table against the original. |
-| Review interval, ref prefix and number | In the app: **Settings** | |
+| Review interval, ref prefix and number, Registered Manager email, passcode | In the app: **Settings** | |
 
 ## Updating the app
 

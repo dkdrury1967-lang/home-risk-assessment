@@ -72,3 +72,31 @@ export function saveAssessment(assessment) {
 export function deleteAssessment(id) {
   return run("assessments", "readwrite", (s) => s.delete(id));
 }
+
+// ---- Passcode record (kept apart from the settings so saving settings can
+// never overwrite it) ----
+export async function getPasscodeRecord() {
+  return (await run("settings", "readonly", (s) => s.get("passcode"))) || null;
+}
+export function savePasscodeRecord(record) {
+  return run("settings", "readwrite", (s) => s.put(record, "passcode"));
+}
+export function clearPasscodeRecord() {
+  return run("settings", "readwrite", (s) => s.delete("passcode"));
+}
+
+/**
+ * Delete everything this app has stored on the phone (assessments, settings
+ * and the passcode). Used by "Forgot passcode". Exported files are not touched.
+ */
+export async function eraseEverything() {
+  const db = await openDb();
+  db.close();
+  dbPromise = null;
+  await new Promise((resolve, reject) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+    req.onblocked = () => resolve();
+  });
+}

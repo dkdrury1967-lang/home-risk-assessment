@@ -11,7 +11,8 @@
     "nextRiskRefNumber": 1,
     "riskRefDigits": 3,
     "reviewIntervalMonths": 12,
-    "rmEmail": ""
+    "rmEmail": "",
+    "lockAfterSeconds": 300
   },
 
   "warnings": {

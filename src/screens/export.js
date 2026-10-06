@@ -122,7 +122,9 @@ export async function renderExport(root, id) {
         "Email to RM"),
       h("p", { class: "hint" },
         "This opens the Share sheet. Choose Mail (use your work email account, not a personal one) " +
-        "and paste or pick the address in the To line. Save to Files and AirDrop are in the same sheet."),
+        "and paste or pick the address in the To line. The message and attachment are filled in. " +
+        "Mail leaves the Subject blank: type one such as \"Risk assessment\", or send without. " +
+        "Save to Files and AirDrop are in the same sheet."),
       h("button", { class: "btn btn-secondary", type: "button", onclick: () => download(xlsxFile) },
         "Download .xlsx"),
       h("button", { class: "btn btn-secondary", type: "button", onclick: () => download(csvFile) },

@@ -4,7 +4,7 @@
 // IMPORTANT: when you change any app file, change CACHE_VERSION below. That
 // tells the phone to fetch the new files. Add any new file to FILES.
 
-const CACHE_VERSION = "v16";
+const CACHE_VERSION = "v17";
 const CACHE_NAME = `risk-assessment-${CACHE_VERSION}`;
 
 const FILES = [
@@ -26,6 +26,11 @@ const FILES = [
   "src/screens/area.js",
   "src/screens/summary.js",
   "src/screens/export.js",
+  "src/screens/lock.js",
+  "src/screens/passcode-panel.js",
+  "src/passcode-logic.js",
+  "src/lock.js",
+  "src/keypad.js",
   "src/export-logic.js",
   "src/xlsx-loader.js",
   "src/vendor/xlsx.mini.min.js",

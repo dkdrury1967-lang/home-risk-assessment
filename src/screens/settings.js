@@ -1,6 +1,7 @@
 // Settings screen: staff list, risk ref numbering and review interval.
 // Every change is saved straight away.
 import { h, render } from "../ui.js";
+import { buildPasscodePanel } from "./passcode-panel.js";
 import { getSettings, saveSettings, listAssessments, deleteAssessment } from "../db.js";
 import {
   formatRiskRef, cleanPrefix, parseRefNumber, parseReviewMonths, cleanEmail,
@@ -166,6 +167,9 @@ export async function renderSettings(root) {
     h("div", { class: "field" },
       h("label", { for: "review-months" }, "Next review due after (months)"), reviewInput),
     reviewError,
+
+    h("h3", {}, "App passcode"),
+    buildPasscodePanel({ settings, save }),
 
     h("h3", {}, "Registered Manager"),
     h("p", { class: "hint" },

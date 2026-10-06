@@ -196,3 +196,22 @@ ul.areas li { border-bottom: 1px solid var(--line); }
 /* Email to RM */
 .to-box { border: 2px solid var(--ink); border-radius: 12px; padding: 4px 14px 2px; margin: 14px 0; }
 .to-address { font-weight: 700; word-break: break-all; margin: 0 0 4px; user-select: all; -webkit-user-select: all; }
+
+/* ---- Passcode (step 9) ---- */
+.lock-screen { max-width: 340px; margin: 0 auto; text-align: center; }
+.keypad-wrap { margin: 16px 0; }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin: 8px 0 20px; min-height: 20px; }
+.pin-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); }
+.pin-dot.filled { background: var(--ink); }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.keypad.off { opacity: 0.4; pointer-events: none; }
+.key {
+  min-height: 64px; border: 2px solid var(--ink); border-radius: 14px;
+  background: var(--paper); color: var(--ink); font: inherit; font-size: 1.6rem; font-weight: 700;
+}
+.key:active { background: var(--ink); color: #fff; }
+.key:focus-visible { outline: 3px solid #0057d8; outline-offset: 2px; }
+.lock-screen details.guidance { text-align: left; margin-top: 24px; }
+
+/* While the app is away from the screen, hide what is in it */
+body.privacy-cover #app { visibility: hidden; }

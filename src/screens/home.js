@@ -3,6 +3,7 @@ import { h, render } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { listAssessments } from "../db.js";
 import { progress } from "../assessment-logic.js";
+import { isEnabled, lockNow } from "../lock.js";
 import { formatDate } from "../dates.js";
 
 export async function renderHome(root) {
@@ -34,6 +35,7 @@ export async function renderHome(root) {
         })),
 
     h("a", { class: "btn btn-secondary", href: "#/settings" }, "Settings"),
+    isEnabled() ? h("button", { class: "btn btn-secondary", type: "button", onclick: () => lockNow() }, "Lock the app now") : null,
 
     h("section", { class: "notice", "aria-label": "Data protection notes" },
       h("h2", {}, "Keep client data safe"),

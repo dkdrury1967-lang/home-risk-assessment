@@ -8,8 +8,10 @@ import { renderArea } from "./screens/area.js";
 import { renderSummary } from "./screens/summary.js";
 import { renderExport } from "./screens/export.js";
 import { flushCurrent } from "./autosave.js";
+import { initLock, isLocked, setLockListener } from "./lock.js";
+import { renderLock } from "./screens/lock.js";
 
-const APP_VERSION = "0.7.1";
+const APP_VERSION = "0.8.0";
 
 const root = document.getElementById("screen");
 const statusEl = document.getElementById("status");
@@ -70,6 +72,12 @@ const routes = [
 async function showScreen() {
   // Make sure anything typed on the screen we are leaving is saved first.
   await flushCurrent();
+  // While locked, nothing but the lock screen is shown.
+  if (isLocked()) {
+    await renderLock(root, showScreen);
+    window.scrollTo(0, 0);
+    return;
+  }
   let render = renderHome;
   let args = [];
   for (const [pattern, screen] of routes) {
@@ -87,6 +95,8 @@ async function showScreen() {
 async function start() {
   offlineReady = await registerServiceWorker();
   await requestPersistentStorage();
+  await initLock();                 // locked from the start if a passcode is set
+  setLockListener(showScreen);      // show the lock screen when the app locks
   updateStatus();
   window.addEventListener("online", updateStatus);
   window.addEventListener("offline", updateStatus);
