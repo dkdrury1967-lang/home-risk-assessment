@@ -3,9 +3,9 @@
 import { h } from "../ui.js";
 import { loadContent, loadRatingConfig } from "../content.js";
 import { getAssessment } from "../db.js";
-import { ratingChip } from "../components.js";
+import { ratingChip, segmented } from "../components.js";
 import {
-  areaStatus, areaRatings, blankArea, progress, heatmap, summaryCounts, missingItems,
+  areaStatus, areaRatings, blankArea, progress, heatmap, heatmapOmissions, summaryCounts, missingItems,
   residualWarnings, YES,
 } from "../assessment-logic.js";
 import { formatDate } from "../dates.js";
@@ -60,26 +60,63 @@ export async function renderSummary(root, id) {
           checks.map((c) => h("span", { class: "check" }, `Check: ${c}`))));
     });
 
-  // ---- Heat map ----
+  // ---- Heat map (residual = after controls, inherent = before controls) ----
   const impacts = [...config.levels].reverse();
   const short = { "Very high": "Very high", "High": "High", "Medium": "Med", "Low": "Low", "Very Low": "Very low" };
-  const map = heatmap(config, assessment, ids);
-  const table = h("table", { class: "heatmap" },
-    h("caption", {}, "Residual risks. Numbers are the area numbers."),
-    h("thead", {},
-      h("tr", {},
-        h("th", { class: "corner", scope: "col" }, "Prob. ↓ Impact →"),
-        impacts.map((imp) => h("th", { scope: "col" }, short[imp])))),
-    h("tbody", {}, map.map((row) =>
-      h("tr", {},
-        h("th", { scope: "row" }, short[row[0].probability]),
-        row.map((cell) => {
-          const colours = config.ratings[cell.rating];
-          return h("td", {
-            style: `background:${colours.background};color:${colours.text}`,
-            title: `${cell.probability} probability, ${cell.impact} impact: ${cell.rating}`,
-          }, cell.areas.join(" "));
-        })))));
+  const heatBox = h("div", {});
+
+  function drawHeat(view) {
+    const map = heatmap(config, assessment, ids, view);
+    const label = view === "inherent" ? "Inherent risk (before controls)" : "Residual risk (after controls)";
+    const table = h("table", { class: "heatmap" },
+      h("caption", {}, label),
+      h("thead", {},
+        h("tr", {},
+          h("th", { class: "corner", scope: "col" }, "Prob. ↓ Impact →"),
+          impacts.map((imp) => h("th", { scope: "col" }, short[imp])))),
+      h("tbody", {}, map.map((row) =>
+        h("tr", {},
+          h("th", { scope: "row" }, short[row[0].probability]),
+          row.map((cell) => {
+            const colours = config.ratings[cell.rating];
+            return h("td", {
+              style: `background:${colours.background};color:${colours.text}`,
+              title: `${cell.probability} probability, ${cell.impact} impact: ${cell.rating}`,
+            }, cell.areas.join(" "));
+          })))));
+
+    // Legend: what each number in the grid means
+    const plotted = map.flat().flatMap((c) => c.areas).sort((a, b) => a - b);
+    const legend = plotted.length === 0
+      ? h("p", { class: "hint" }, "No risks to show yet.")
+      : h("div", {},
+          h("p", { class: "hint tight-hint" }, "Each number is an area:"),
+          h("ul", { class: "legend" }, plotted.map((n) =>
+            h("li", {}, h("b", {}, String(n)), ` ${content.areas[n - 1].title}`))));
+
+    // What is not on the map, and why
+    const om = heatmapOmissions(assessment, ids, view);
+    const notes = [];
+    if (om.notApplicable) notes.push(`${om.notApplicable} ${om.notApplicable === 1 ? "area" : "areas"} marked not applicable`);
+    if (om.notAssessed) notes.push(`${om.notAssessed} not assessed yet`);
+    if (om.notRated) notes.push(`${om.notRated} without ${view} ratings`);
+    const omitted = notes.length
+      ? h("p", { class: "hint" }, `Not shown: ${notes.join(", ")}.`) : null;
+
+    heatBox.replaceChildren(table, legend, omitted);
+  }
+  drawHeat("residual");
+
+  const viewSwitch = segmented({
+    legend: "Show on the heat map",
+    options: [
+      { value: "residual", label: "Residual (after controls)" },
+      { value: "inherent", label: "Inherent (before controls)" },
+    ],
+    value: "residual",
+    onChange: drawHeat,
+    className: "two",
+  });
 
   const p = counts.byPriority;
   const priorityText = counts.actions === 0 ? "" :
@@ -93,15 +130,16 @@ export async function renderSummary(root, id) {
       `Next review ${formatDate(assessment.nextReviewDue)}.`),
 
     h("div", { class: "stats" },
-      h("div", { class: "stat" }, h("b", {}, String(counts.risks)), "risks"),
-      h("div", { class: "stat" }, h("b", {}, String(counts.actions)), "actions"),
+      h("div", { class: "stat" }, h("b", {}, String(counts.risks)), counts.risks === 1 ? "risk" : "risks"),
+      h("div", { class: "stat" }, h("b", {}, String(counts.actions)), counts.actions === 1 ? "action" : "actions"),
       h("div", { class: "stat" }, h("b", {}, `${done}/${total}`), "areas done")),
     counts.actions ? h("p", { class: "hint" }, `Actions${priorityText}`) : null,
 
     unfinishedBlock,
 
     h("h3", {}, "Heat map"),
-    table,
+    viewSwitch,
+    heatBox,
 
     h("h3", {}, "Risks"),
     riskRows.length === 0

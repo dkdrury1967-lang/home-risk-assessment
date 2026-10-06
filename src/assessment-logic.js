@@ -132,12 +132,15 @@ export function residualWarnings(config, area) {
 }
 
 /**
- * The 5x5 heat map of residual risks. Returns rows from highest probability
- * to lowest; each row has one cell per impact, lowest impact first, matching
- * the table layout in the brief. Each cell lists the area numbers (1-based)
- * whose residual risk falls there. Only applicable areas are counted.
+ * The 5x5 heat map. view is "residual" (after controls, the default) or
+ * "inherent" (before controls). Returns rows from highest probability to
+ * lowest; each row has one cell per impact, lowest impact first, matching the
+ * table layout in the brief. Each cell lists the area numbers (1-based) whose
+ * risk falls there. Only applicable areas are counted.
  */
-export function heatmap(config, assessment, areaIds) {
+export function heatmap(config, assessment, areaIds, view = "residual") {
+  const probField = view === "inherent" ? "inherentProb" : "residualProb";
+  const impactField = view === "inherent" ? "inherentImpact" : "residualImpact";
   const impacts = [...config.levels].reverse(); // Very Low ... Very high
   return config.levels.map((probability) =>
     impacts.map((impact) => ({
@@ -147,9 +150,27 @@ export function heatmap(config, assessment, areaIds) {
       areas: areaIds
         .map((id, i) => ({ area: assessment.areas[id], number: i + 1 }))
         .filter(({ area }) => area && area.applicable === YES &&
-          area.residualProb === probability && area.residualImpact === impact)
+          area[probField] === probability && area[impactField] === impact)
         .map(({ number }) => number),
     })));
+}
+
+/**
+ * Areas the heat map leaves out, so the summary can say so:
+ * notApplicable = marked "No"; notAssessed = still "Not assessed yet";
+ * notRated = applicable but the probability or impact is missing for this view.
+ */
+export function heatmapOmissions(assessment, areaIds, view = "residual") {
+  const probField = view === "inherent" ? "inherentProb" : "residualProb";
+  const impactField = view === "inherent" ? "inherentImpact" : "residualImpact";
+  const result = { notApplicable: 0, notAssessed: 0, notRated: 0 };
+  for (const id of areaIds) {
+    const area = assessment.areas[id];
+    if (!area || area.applicable === UNASSESSED) result.notAssessed++;
+    else if (area.applicable === NO) result.notApplicable++;
+    else if (!area[probField] || !area[impactField]) result.notRated++;
+  }
+  return result;
 }
 
 /** Counts for the summary screen. */

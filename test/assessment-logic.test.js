@@ -76,7 +76,7 @@ test("progress counts complete and not-applicable areas", () => {
   assert.equal(firstUnfinishedIndex(config, a, ["a", "b", "c"]), -1);
 });
 
-import { residualWarnings, heatmap, summaryCounts } from "../src/assessment-logic.js";
+import { residualWarnings, heatmap, heatmapOmissions, summaryCounts } from "../src/assessment-logic.js";
 
 test("warns when residual is higher than inherent, on either axis", () => {
   assert.deepEqual(residualWarnings(config, done()), []); // High/High -> Low/Low
@@ -117,4 +117,28 @@ test("summary counts risks and actions by priority", () => {
   a.areas.c = { ...blankArea(), applicable: "no" };
   assert.deepEqual(summaryCounts(config, a, ids),
     { risks: 2, actions: 2, byPriority: { High: 1, Medium: 0, Low: 0, "Not set": 1 } });
+});
+
+test("heat map can show inherent risks (before controls) as well as residual", () => {
+  const ids = ["a", "b"];
+  const a = newAssessment({ id: "x", clientName: "A", assessedBy: "B", dateAssessed: "d", nextReviewDue: "d", areaIds: ids, now: "t" });
+  // inherent High/High = Critical; residual Very Low/Medium = Sustainable
+  a.areas.a = done({ inherentProb: "High", inherentImpact: "High", residualProb: "Very Low", residualImpact: "Medium" });
+  const inherent = heatmap(config, a, ids, "inherent");
+  const residual = heatmap(config, a, ids, "residual");
+  assert.deepEqual(inherent[1][3].areas, [1]);   // High row, High column
+  assert.equal(inherent[1][3].rating, "Critical");
+  assert.deepEqual(residual[4][2].areas, [1]);   // Very Low row, Medium column
+  assert.equal(residual[4][2].rating, "Sustainable");
+  assert.equal(heatmap(config, a, ids).flat().filter((c) => c.areas.length).length, 1); // default = residual
+});
+
+test("heat map omissions are counted so the summary can say what is not shown", () => {
+  const ids = ["a", "b", "c", "d"];
+  const a = newAssessment({ id: "x", clientName: "A", assessedBy: "B", dateAssessed: "d", nextReviewDue: "d", areaIds: ids, now: "t" });
+  a.areas.a = done();
+  a.areas.b = { ...blankArea(), applicable: "no" };
+  a.areas.c = { ...blankArea(), applicable: "yes", description: "no ratings yet" };
+  // d stays "not assessed yet"
+  assert.deepEqual(heatmapOmissions(a, ids), { notApplicable: 1, notAssessed: 1, notRated: 1 });
 });
