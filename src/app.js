@@ -2,8 +2,12 @@
 // our data, and shows the right screen for the address after the # sign.
 import { renderHome } from "./screens/home.js";
 import { renderSettings } from "./screens/settings.js";
+import { renderStart } from "./screens/start.js";
+import { renderOverview } from "./screens/overview.js";
+import { renderArea } from "./screens/area.js";
+import { flushCurrent } from "./autosave.js";
 
-const APP_VERSION = "0.2.0";
+const APP_VERSION = "0.3.0";
 
 const root = document.getElementById("screen");
 const statusEl = document.getElementById("status");
@@ -31,7 +35,7 @@ async function registerServiceWorker() {
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (hadController && !reloading) {
       reloading = true;
-      location.reload();
+      flushCurrent().finally(() => location.reload());
     }
   });
   try {
@@ -49,17 +53,27 @@ function updateStatus() {
   statusEl.textContent = `${net} · ${ready}`;
 }
 
-// Screens, chosen by the part of the address after the #.
-const routes = {
-  "": renderHome,
-  "#/": renderHome,
-  "#/settings": renderSettings,
-};
+// Screens, chosen by the part of the address after the #. Anything in
+// brackets in the pattern is passed to the screen (e.g. the assessment id).
+const routes = [
+  [/^(#\/?)?$/, renderHome],
+  [/^#\/settings$/, renderSettings],
+  [/^#\/assessment\/new$/, renderStart],
+  [/^#\/assessment\/([^/]+)$/, renderOverview],
+  [/^#\/assessment\/([^/]+)\/area\/(\d+)$/, renderArea],
+];
 
 async function showScreen() {
-  const render = routes[location.hash] || renderHome;
+  // Make sure anything typed on the screen we are leaving is saved first.
+  await flushCurrent();
+  let render = renderHome;
+  let args = [];
+  for (const [pattern, screen] of routes) {
+    const match = location.hash.match(pattern);
+    if (match) { render = screen; args = match.slice(1); break; }
+  }
   try {
-    await render(root);
+    await render(root, ...args);
   } catch (err) {
     root.replaceChildren(document.createTextNode(`Something went wrong: ${err.message}`));
   }
