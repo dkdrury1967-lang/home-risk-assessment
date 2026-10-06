@@ -9,7 +9,7 @@ import { renderSummary } from "./screens/summary.js";
 import { renderExport } from "./screens/export.js";
 import { flushCurrent } from "./autosave.js";
 
-const APP_VERSION = "0.6.0";
+const APP_VERSION = "0.6.1";
 
 const root = document.getElementById("screen");
 const statusEl = document.getElementById("status");

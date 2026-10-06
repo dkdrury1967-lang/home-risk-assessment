@@ -138,7 +138,8 @@ export async function renderSettings(root) {
     staffError,
 
     h("h3", {}, "Risk reference numbers"),
-    h("p", { class: "hint" }, "Set the next number to follow on from the last risk in your Risk Register."),
+    h("p", { class: "hint" }, "Each assessor needs their own prefix (for example initials such as DD or SC), so refs never clash in the Risk Register. " +
+      "Set the next number to follow on from your own last ref."),
     h("div", { class: "field-row" },
       h("div", { class: "field" }, h("label", { for: "ref-prefix" }, "Prefix"), prefixInput),
       h("div", { class: "field" }, h("label", { for: "ref-number" }, "Next number"), numberInput)),

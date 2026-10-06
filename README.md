@@ -26,6 +26,32 @@ Master Dashboard.
 
 Never enter key-safe codes, door codes or passwords. The app warns about this.
 
+## Several assessors (risk reference numbers)
+
+Each phone keeps its own counter, so two people could otherwise both create the
+same ref and the Risk Register would hold two different risks with one reference.
+The register also needs every ref to have a value: its Helper sheet (used by Record
+Lookup) skips any row where the Risk Ref is blank, so the ref **cannot** be left
+blank for Excel to fill in later.
+
+**Rule: every assessor uses their own prefix.** In the app: **Settings > Risk reference numbers**.
+
+- Set a prefix that is unique to you (letters or numbers, up to 6), and set **Next number** to 1 for a new prefix.
+- Refs then look like `DD001`, `SC001`, `JP001` and can never clash between people.
+- Never share a prefix. The app cannot check for clashes, so the list below is the record.
+- Refs already in the register (RR001 to RR007) stay as they are.
+
+| Assessor | Prefix | Set up on their phone? |
+|---|---|---|
+| David Drury | | |
+| Sarah Collins | | |
+| John Peters | | |
+
+*(Suggested: DD, SC, JP. Fill in the table once agreed.)*
+
+Each person also sets up their own phone: the staff list must match the **Staff
+Names** list in the workbook, and each person sets their own review interval.
+
 ## Data protection
 
 - The data is special-category (health) information. The assessor is responsible
