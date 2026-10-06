@@ -1,0 +1,17 @@
+{
+  "_readme": "Edit this file to change how risks are rated. 'levels' lists the five scale values, highest first. 'matrix' has one row per Probability and one column per Impact, both in the order of 'levels'. 'ratings' sets the colour for each rating name.",
+  "levels": ["Very high", "High", "Medium", "Low", "Very Low"],
+  "matrix": {
+    "Very high": { "Very Low": "Moderate",    "Low": "Severe",      "Medium": "Severe",   "High": "Critical", "Very high": "Critical" },
+    "High":      { "Very Low": "Sustainable", "Low": "Moderate",    "Medium": "Severe",   "High": "Critical", "Very high": "Critical" },
+    "Medium":    { "Very Low": "Sustainable", "Low": "Moderate",    "Medium": "Moderate", "High": "Severe",   "Very high": "Critical" },
+    "Low":       { "Very Low": "Sustainable", "Low": "Sustainable", "Medium": "Moderate", "High": "Severe",   "Very high": "Critical" },
+    "Very Low":  { "Very Low": "Sustainable", "Low": "Sustainable", "Medium": "Sustainable", "High": "Moderate", "Very high": "Severe" }
+  },
+  "ratings": {
+    "Critical":    { "background": "#8b0000", "text": "#ffffff" },
+    "Severe":      { "background": "#f57c00", "text": "#000000" },
+    "Moderate":    { "background": "#ffc107", "text": "#000000" },
+    "Sustainable": { "background": "#4caf50", "text": "#000000" }
+  }
+}

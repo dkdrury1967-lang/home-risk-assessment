@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Home Risk Assessment</title>
+  <meta name="theme-color" content="#ff9200">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- iPhone "Add to Home Screen" settings -->
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Risk Assess">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Home Risk Assessment</h1>
+    <p class="subtitle">Daisy Homecare</p>
+  </header>
+
+  <main id="app" class="screen">
+    <p class="status" id="status" role="status">Starting…</p>
+
+    <button class="btn btn-primary" id="new-assessment" type="button" disabled>
+      Start new assessment
+    </button>
+
+    <h2>Saved assessments</h2>
+    <p class="empty" id="saved-list">None yet.</p>
+
+    <button class="btn btn-secondary" id="open-settings" type="button" disabled>
+      Settings
+    </button>
+
+    <section class="notice" aria-label="Data protection notes">
+      <h2>Keep client data safe</h2>
+      <ul id="warnings"></ul>
+    </section>
+
+    <p class="version" id="version"></p>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

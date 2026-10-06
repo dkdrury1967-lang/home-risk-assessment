@@ -1,0 +1,11 @@
+{
+  "name": "home-risk-assessment",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline phone app for Daisy Homecare home risk assessments",
+  "type": "module",
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test test/*.test.js"
+  }
+}

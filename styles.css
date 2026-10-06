@@ -1,0 +1,68 @@
+/* Phone-first styles: big tap targets (44px minimum), high contrast for poor
+   light, and a layout that simply gets wider on a tablet. */
+:root {
+  --orange: #ff9200;
+  --orange-dark: #b35f00;
+  --ink: #1a1a1a;
+  --paper: #ffffff;
+  --grey: #5a5a5a;
+  --line: #d0d0d0;
+  --tap: 52px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 18px/1.45 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  /* keep content clear of the iPhone notch and home bar */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.app-header {
+  background: var(--orange);
+  color: #000;
+  padding: 16px 20px;
+}
+.app-header h1 { margin: 0; font-size: 1.4rem; }
+.subtitle { margin: 0; font-weight: 600; }
+
+.screen { max-width: 720px; margin: 0 auto; padding: 16px 20px 40px; }
+h2 { font-size: 1.15rem; margin: 28px 0 8px; }
+
+.btn {
+  display: block;
+  width: 100%;
+  min-height: var(--tap);
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  border: 2px solid var(--ink);
+}
+.btn-primary { background: var(--orange); color: #000; }
+.btn-secondary { background: var(--paper); color: var(--ink); }
+.btn:disabled { opacity: 0.45; }
+.btn:focus-visible { outline: 3px solid #0057d8; outline-offset: 2px; }
+
+.status { margin: 0 0 8px; color: var(--grey); font-size: 0.9rem; }
+.empty { color: var(--grey); }
+
+.notice {
+  margin-top: 28px;
+  padding: 4px 16px 12px;
+  border: 2px solid var(--orange-dark);
+  border-radius: 12px;
+  background: #fff6e8;
+}
+.notice h2 { margin-top: 12px; }
+.notice ul { padding-left: 20px; margin: 0; }
+.notice li { margin: 8px 0; }
+
+.version { margin-top: 24px; color: var(--grey); font-size: 0.8rem; text-align: center; }
+
+@media (min-width: 700px) {
+  body { font-size: 20px; }
+}

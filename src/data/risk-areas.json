@@ -1,0 +1,198 @@
+{
+  "_readme": "All assessment content lives here. Edit the wording freely. Keep each area's 'id' unchanged once assessments exist, because saved assessments refer to it. 'guidance' is the list of bullet prompts shown in the collapsible Guidance panel.",
+
+  "scale": ["Very high", "High", "Medium", "Low", "Very Low"],
+  "priorities": ["High", "Medium", "Low"],
+
+  "defaults": {
+    "_note": "Starting values for Settings. Staff list is pre-filled; edit it in Settings. Set the next risk ref number to follow on from the last one in the Risk Register.",
+    "staff": ["Sarah Collins", "John Peters", "David Drury", "Registered Manager", "Deputy Manager"],
+    "riskRefPrefix": "RR",
+    "nextRiskRefNumber": 1,
+    "riskRefDigits": 3,
+    "reviewIntervalMonths": 12
+  },
+
+  "warnings": {
+    "noCodes": "Do not enter key-safe codes, door codes or passwords anywhere in this app. Do not write the codes down.",
+    "deviceSecurity": "You are responsible for the security of this phone. Keep its own passcode switched on.",
+    "dpia": "A Data Protection Impact Assessment (DPIA) should be completed by Daisy Homecare before real client data is used in this app."
+  },
+
+  "areas": [
+    {
+      "id": "access-to-home",
+      "title": "Access to home",
+      "question": "Is there easy access and exit, with more than one exit, and are doors easily opened and unobstructed?",
+      "guidance": [
+        "Key-safe security: do not write codes down; scramble the numbers on leaving",
+        "Safe access to dustbins"
+      ]
+    },
+    {
+      "id": "internal-household",
+      "title": "Internal household",
+      "question": "Are surfaces level and uncluttered (wires, rugs, carpet joins), with adequate space to work?",
+      "guidance": [
+        "Wash space, bath aids and chairs serviced and charged",
+        "Hygiene assistance level (OT instruction?)",
+        "Unfitted carpets or rugs and trip hazards: can edges be taped, can the client lift their foot over a rug?",
+        "Difficulty using equipment (OT referral?)",
+        "Clear working surfaces",
+        "Smoke alarms working",
+        "Link line (red alarm) present or needed",
+        "Electrical outlets safe and not overloaded",
+        "Water, gas and electricity working; service contracts in place if faults"
+      ]
+    },
+    {
+      "id": "steps-stairs",
+      "title": "Steps / stairs",
+      "question": "Are steps and stairs non-slip, level and solid, and is any stair lift installed and in date?",
+      "guidance": [
+        "Is the client safe on the stairs?",
+        "Let them reach the top first",
+        "Non-slip mats",
+        "Stair lift serviced"
+      ]
+    },
+    {
+      "id": "kitchen",
+      "title": "Kitchen",
+      "question": "Are appliances and fire-safety equipment present and in date, and are electrics and gas safe?",
+      "guidance": [
+        "Cooker in good order; gas not left on",
+        "Fire blanket or extinguisher present and PAT tested",
+        "Electrical appliances safe",
+        "Clean, hygienic, clear work area"
+      ]
+    },
+    {
+      "id": "lighting-neighbourhood",
+      "title": "Lighting and neighbourhood",
+      "question": "Is the home and approach well lit, are dark places identified, and is the general area safe, with safe lit parking close to the home?",
+      "guidance": [
+        "Porch, sensor and street lighting",
+        "Front garden structure, trees, obstructions",
+        "Carry a torch if needed",
+        "Parking details (driveway, zones, times)"
+      ]
+    },
+    {
+      "id": "pets",
+      "title": "Pets",
+      "question": "Are pets adequately restrained? Discuss at the introductory visit.",
+      "guidance": [
+        "Be sensitive: pets are family",
+        "Service pet?",
+        "Carer asthma or allergies",
+        "No risk of an animal escaping when entering or leaving"
+      ]
+    },
+    {
+      "id": "public-transport-route",
+      "title": "Route from public transport to the home",
+      "question": "Is the route from public transport to the home safe, for carers and for the client on outings?",
+      "guidance": [
+        "Travelling to and from work: bus stop location, distance, timetable (especially late at night)",
+        "Escorting the client on outings: can they walk to the stop, are they safe on a bus, wheelchair or mobility aid on the bus"
+      ]
+    },
+    {
+      "id": "other-people-in-home",
+      "title": "Other people living in the home",
+      "question": "Do other people in the home or nearby present any risk?",
+      "guidance": [
+        "Spouse, children, family, friends, shared-home scenarios",
+        "Others in a complex and close neighbours"
+      ]
+    },
+    {
+      "id": "aggressive-behaviour",
+      "title": "History of aggressive behaviour or potential violence",
+      "question": "Is there any history of aggressive behaviour or potential violence, by the client or close associates?",
+      "guidance": [
+        "Criminal history",
+        "Patterns of disruptive behaviour or abuse",
+        "Drug or alcohol problems",
+        "Dementia or neurological conditions linked to aggression",
+        "Include neighbours"
+      ]
+    },
+    {
+      "id": "risk-to-self",
+      "title": "Client a risk to themselves / other hazards",
+      "question": "Is the client a risk to themselves, for example through mental health issues or substance or alcohol misuse?",
+      "guidance": [
+        "History of mental health issues leading to loss of control or self-harm",
+        "Registered with a mental health nurse",
+        "Behavioural signs, broken furniture or windows"
+      ]
+    },
+    {
+      "id": "storage-medicines-substances",
+      "title": "Storage of medicines and substances",
+      "question": "Are medicines and other substances stored safely?",
+      "guidance": [
+        "Dangerous medicines",
+        "Out of reach or locked away",
+        "Capable of safe self-medication",
+        "Packed in a measurable way (e.g. dosette box)"
+      ]
+    },
+    {
+      "id": "medication-requirements",
+      "title": "Medication requirements",
+      "question": "Are the client's medication requirements clear, and can they be met safely?",
+      "guidance": [
+        "Odd instructions explained and noted on the medication record",
+        "Does the care plan say when and how to give?",
+        "Self-medication ability",
+        "Alternative ingestion (crushing, PEG)",
+        "Complex drugs (warfarin, morphine, antibiotics) charted differently"
+      ]
+    },
+    {
+      "id": "ppe-requirements",
+      "title": "PPE requirements",
+      "question": "What personal protective equipment (PPE) is needed, and who supplies it?",
+      "guidance": [
+        "Bodily-fluid contact",
+        "Communicable disease (e.g. HIV, MRSA, shingles)",
+        "Compromised immune system (e.g. chemotherapy)",
+        "Foot covers, aprons, gloves (latex-free?), masks, eyewear",
+        "Supplied at home or by the carer"
+      ]
+    },
+    {
+      "id": "allergies-intolerances",
+      "title": "Allergies and intolerances",
+      "question": "Does the client have any allergies or intolerances, and are they listed on the care plan?",
+      "guidance": [
+        "Known allergies and reactions",
+        "Do you know how to use an EpiPen?",
+        "Intolerances and aversions",
+        "Common allergens (shellfish, nuts, penicillin, foods, soaps and fragrances, latex)",
+        "Listed on the care plan"
+      ]
+    },
+    {
+      "id": "other-safety-issues",
+      "title": "Other safety issues with premises or person",
+      "question": "Is there anything else about the premises or the person that gives a sense of unease?",
+      "guidance": [
+        "Block of flats, stairs or lifts",
+        "Do you feel safe and have good rapport?"
+      ]
+    },
+    {
+      "id": "other-agencies",
+      "title": "Other agencies supporting the client",
+      "question": "Which other agencies support the client, and can a care team be formed around them?",
+      "guidance": [
+        "Names and contact details so a care team can form",
+        "District nurse, social care, community care agency, volunteer groups, mental health nurse, Link Line, Parkinson's nurse, etc."
+      ]
+    }
+  ]
+}
