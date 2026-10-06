@@ -4,7 +4,7 @@
 // IMPORTANT: when you change any app file, change CACHE_VERSION below. That
 // tells the phone to fetch the new files. Add any new file to FILES.
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v5";
 const CACHE_NAME = `risk-assessment-${CACHE_VERSION}`;
 
 const FILES = [
@@ -13,6 +13,12 @@ const FILES = [
   "styles.css",
   "manifest.webmanifest",
   "src/app.js",
+  "src/content.js",
+  "src/db.js",
+  "src/ui.js",
+  "src/settings-logic.js",
+  "src/screens/home.js",
+  "src/screens/settings.js",
   "src/rating.js",
   "src/config/rating-matrix.json",
   "src/data/risk-areas.json",

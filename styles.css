@@ -66,3 +66,30 @@ h2 { font-size: 1.15rem; margin: 28px 0 8px; }
 @media (min-width: 700px) {
   body { font-size: 20px; }
 }
+
+/* ---- Screens added in step 5 ---- */
+a.btn { text-decoration: none; text-align: center; line-height: 1.6; color: var(--ink); }
+.hint { color: var(--grey); font-size: 0.9rem; margin: 4px 0 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+h2.first { margin-top: 8px; }
+h3 { font-size: 1.05rem; margin: 28px 0 4px; }
+.back { display: inline-block; min-height: var(--tap); line-height: var(--tap); color: #0057d8; font-weight: 700; text-decoration: none; }
+.saved { min-height: 1.4em; margin: 0; color: #1b6e2d; font-weight: 700; }
+.error { color: #b00020; font-weight: 700; margin: 4px 0; min-height: 0; }
+ul.plain { list-style: none; padding: 0; margin: 8px 0; }
+ul.staff li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--tap); border-bottom: 1px solid var(--line); }
+
+/* 16px+ text in fields stops iPhone zooming in when you tap them */
+input[type="text"], input[type="number"] {
+  width: 100%; min-height: var(--tap); padding: 8px 12px;
+  font: inherit; color: var(--ink); background: var(--paper);
+  border: 2px solid var(--ink); border-radius: 12px;
+}
+input:focus-visible { outline: 3px solid #0057d8; outline-offset: 2px; }
+.field label { display: block; font-weight: 700; margin-bottom: 4px; }
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+.inline-form { display: flex; gap: 12px; align-items: flex-start; margin-top: 8px; }
+.inline-form input { flex: 1; }
+.btn.add { width: auto; margin: 0; padding: 12px 20px; }
+.btn-small { min-height: 44px; min-width: 44px; padding: 8px 14px; font: inherit; font-weight: 700; color: #b00020; background: var(--paper); border: 2px solid #b00020; border-radius: 10px; }
